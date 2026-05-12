@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoLab - Encryption & Decryption Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="app">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1>CryptoLab</h1>
+                    <p class="subtitle">Encryption & Decryption Tool</p>
+                </div>
+            </div>
+            <div class="header-badges">
+                <span class="badge badge-blue">AES-256</span>
+                <span class="badge badge-purple">DES</span>
+                <span class="badge badge-green">RSA-2048</span>
+                <span class="badge badge-orange">Hybrid</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs">
+        <button class="tab active" data-tab="encrypt" onclick="switchTab('encrypt')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Encrypt
+        </button>
+        <button class="tab" data-tab="decrypt" onclick="switchTab('decrypt')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 5-5 5 5 0 0 1 5 5"/>
+            </svg>
+            Decrypt
+        </button>
+        <button class="tab" data-tab="compare" onclick="switchTab('compare')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            AES vs DES
+        </button>
+        <button class="tab" data-tab="hybrid" onclick="switchTab('hybrid')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Hybrid
+        </button>
+    </nav>
+
+    <!-- ============ ENCRYPT TAB ============ -->
+    <section id="tab-encrypt" class="tab-content active">
+        <div class="card">
+            <div class="card-header">
+                <h2>Symmetric Encryption</h2>
+                <p>Encrypt files using AES-256 or DES algorithms</p>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Select Algorithm</label>
+                    <div class="radio-group">
+                        <label class="radio-card active" onclick="selectRadio(this, 'enc-algo')">
+                            <input type="radio" name="enc-algo" value="AES" checked>
+                            <div class="radio-card-content">
+                                <span class="radio-title">AES-256</span>
+                                <span class="radio-desc">Industry standard, highly secure</span>
+                            </div>
+                        </label>
+                        <label class="radio-card" onclick="selectRadio(this, 'enc-algo')">
+                            <input type="radio" name="enc-algo" value="DES">
+                            <div class="radio-card-content">
+                                <span class="radio-title">DES</span>
+                                <span class="radio-desc">Legacy, educational use only</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Upload File</label>
+                    <div class="file-drop" id="enc-drop" onclick="document.getElementById('enc-file').click()"
+                         ondragover="event.preventDefault(); this.classList.add('dragover')"
+                         ondragleave="this.classList.remove('dragover')"
+                         ondrop="handleDrop(event, 'enc-file')">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p>Drag & drop a file here or <span class="link">browse</span></p>
+                        <p class="file-name" id="enc-file-name"></p>
+                    </div>
+                    <input type="file" id="enc-file" hidden onchange="showFileName('enc-file', 'enc-file-name')">
+                </div>
+                <button class="btn btn-primary btn-lg" onclick="doEncrypt()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Encrypt File
+                </button>
+            </div>
+        </div>
+        <div id="enc-result" class="result-card hidden"></div>
+    </section>
+
+    <!-- ============ DECRYPT TAB ============ -->
+    <section id="tab-decrypt" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h2>Symmetric Decryption</h2>
+                <p>Decrypt files and verify integrity with SHA-256</p>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Algorithm Used</label>
+                    <div class="radio-group">
+                        <label class="radio-card active" onclick="selectRadio(this, 'dec-algo')">
+                            <input type="radio" name="dec-algo" value="AES" checked>
+                            <div class="radio-card-content">
+                                <span class="radio-title">AES-256</span>
+                            </div>
+                        </label>
+                        <label class="radio-card" onclick="selectRadio(this, 'dec-algo')">
+                            <input type="radio" name="dec-algo" value="DES">
+                            <div class="radio-card-content">
+                                <span class="radio-title">DES</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Encrypted File (.bin)</label>
+                        <div class="file-input-row">
+                            <button class="btn btn-outline" onclick="document.getElementById('dec-enc-file').click()">Choose File</button>
+                            <span class="file-label" id="dec-enc-label">No file chosen</span>
+                        </div>
+                        <input type="file" id="dec-enc-file" hidden onchange="showLabel('dec-enc-file','dec-enc-label')">
+                    </div>
+                    <div class="form-group">
+                        <label>Metadata File (.json)</label>
+                        <div class="file-input-row">
+                            <button class="btn btn-outline" onclick="document.getElementById('dec-meta-file').click()">Choose File</button>
+                            <span class="file-label" id="dec-meta-label">No file chosen</span>
+                        </div>
+                        <input type="file" id="dec-meta-file" hidden onchange="showLabel('dec-meta-file','dec-meta-label')">
+                    </div>
+                    <div class="form-group">
+                        <label>Key File (.bin)</label>
+                        <div class="file-input-row">
+                            <button class="btn btn-outline" onclick="document.getElementById('dec-key-file').click()">Choose File</button>
+                            <span class="file-label" id="dec-key-label">No file chosen</span>
+                        </div>
+                        <input type="file" id="dec-key-file" hidden onchange="showLabel('dec-key-file','dec-key-label')">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg" onclick="doDecrypt()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 5-5 5 5 0 0 1 5 5"/>
+                    </svg>
+                    Decrypt & Verify
+                </button>
+            </div>
+        </div>
+        <div id="dec-result" class="result-card hidden"></div>
+    </section>
+
+    <!-- ============ COMPARE TAB ============ -->
+    <section id="tab-compare" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h2>AES vs DES Comparison</h2>
+                <p>Benchmark encryption speed, ciphertext size, and security properties</p>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Upload File to Compare</label>
+                    <div class="file-drop" id="cmp-drop" onclick="document.getElementById('cmp-file').click()"
+                         ondragover="event.preventDefault(); this.classList.add('dragover')"
+                         ondragleave="this.classList.remove('dragover')"
+                         ondrop="handleDrop(event, 'cmp-file')">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p>Drag & drop a file here or <span class="link">browse</span></p>
+                        <p class="file-name" id="cmp-file-name"></p>
+                    </div>
+                    <input type="file" id="cmp-file" hidden onchange="showFileName('cmp-file', 'cmp-file-name')">
+                </div>
+                <button class="btn btn-primary btn-lg" onclick="doCompare()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                    Run Comparison
+                </button>
+            </div>
+        </div>
+        <div id="cmp-result" class="result-card hidden"></div>
+    </section>
+
+    <!-- ============ HYBRID TAB ============ -->
+    <section id="tab-hybrid" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h2>Hybrid Encryption</h2>
+                <p>AES-256 encrypts the data, RSA-2048 encrypts the AES key — real-world approach</p>
+            </div>
+            <div class="card-body">
+                <div class="info-banner">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <span>Step 1: Generate RSA keys. Step 2: Encrypt. Step 3: Decrypt & verify.</span>
+                </div>
+
+                <button class="btn btn-secondary" onclick="genRSA()" id="rsa-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                    </svg>
+                    Generate RSA-2048 Key Pair
+                </button>
+                <div id="rsa-status" class="status-msg hidden"></div>
+
+                <hr class="divider">
+
+                <div class="form-group">
+                    <label>Upload File for Hybrid Encryption</label>
+                    <div class="file-drop" id="hyb-drop" onclick="document.getElementById('hyb-file').click()"
+                         ondragover="event.preventDefault(); this.classList.add('dragover')"
+                         ondragleave="this.classList.remove('dragover')"
+                         ondrop="handleDrop(event, 'hyb-file')">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p>Drag & drop a file here or <span class="link">browse</span></p>
+                        <p class="file-name" id="hyb-file-name"></p>
+                    </div>
+                    <input type="file" id="hyb-file" hidden onchange="showFileName('hyb-file', 'hyb-file-name')">
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="doHybridEncrypt()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        Hybrid Encrypt
+                    </button>
+                    <button class="btn btn-green" onclick="doHybridDecrypt()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Hybrid Decrypt & Verify
+                    </button>
+                </div>
+
+                <div class="form-row" id="hyb-dec-inputs" style="margin-top:16px;">
+                    <div class="form-group">
+                        <label>Encrypted File (.bin)</label>
+                        <div class="file-input-row">
+                            <button class="btn btn-outline btn-sm" onclick="document.getElementById('hyb-dec-enc').click()">Choose</button>
+                            <span class="file-label" id="hyb-dec-enc-label">No file</span>
+                        </div>
+                        <input type="file" id="hyb-dec-enc" hidden onchange="showLabel('hyb-dec-enc','hyb-dec-enc-label')">
+                    </div>
+                    <div class="form-group">
+                        <label>Metadata (.json)</label>
+                        <div class="file-input-row">
+                            <button class="btn btn-outline btn-sm" onclick="document.getElementById('hyb-dec-meta').click()">Choose</button>
+                            <span class="file-label" id="hyb-dec-meta-label">No file</span>
+                        </div>
+                        <input type="file" id="hyb-dec-meta" hidden onchange="showLabel('hyb-dec-meta','hyb-dec-meta-label')">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="hyb-result" class="result-card hidden"></div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
