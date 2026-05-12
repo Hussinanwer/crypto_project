@@ -1,0 +1,24 @@
+{
+  "name": "crypto_project",
+  "version": "1.0.0",
+  "description": "A real-data encryption/decryption application implementing **AES-256**, **DES**, **RSA-2048**, and **Hybrid** encryption with a modern dark-themed web UI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hussinanwer/crypto_project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Hussinanwer/crypto_project/issues"
+  },
+  "homepage": "https://github.com/Hussinanwer/crypto_project#readme",
+  "dependencies": {
+    "docx": "^9.6.1"
+  }
+}
