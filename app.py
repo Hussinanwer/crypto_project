@@ -28,8 +28,9 @@ def api_encrypt():
     if file.filename == "":
         return jsonify({"error": "No file selected"}), 400
 
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    input_path = os.path.join(OUTPUT_DIR, "upload_" + file.filename)
+    algo_dir = os.path.join(OUTPUT_DIR, algo)
+    os.makedirs(algo_dir, exist_ok=True)
+    input_path = os.path.join(algo_dir, "upload_" + file.filename)
     file.save(input_path)
 
     try:
@@ -39,10 +40,10 @@ def api_encrypt():
                 return jsonify({"error": "RSA keys not found. Generate them first."}), 400
             with open(pub_path, "rb") as f:
                 pub_key = f.read()
-            result = crypto_utils.encrypt_file(input_path, OUTPUT_DIR, "Hybrid",
+            result = crypto_utils.encrypt_file(input_path, algo_dir, "Hybrid",
                                                public_key_pem=pub_key)
         else:
-            result = crypto_utils.encrypt_file(input_path, OUTPUT_DIR, algo)
+            result = crypto_utils.encrypt_file(input_path, algo_dir, algo)
 
         with open(result["encrypted_file"], "rb") as f:
             full_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -72,9 +73,10 @@ def api_decrypt():
     if not enc_file or not meta_file:
         return jsonify({"error": "Encrypted file and metadata file are required"}), 400
 
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    enc_path = os.path.join(OUTPUT_DIR, "dec_" + enc_file.filename)
-    meta_path = os.path.join(OUTPUT_DIR, "dec_" + meta_file.filename)
+    algo_dir = os.path.join(OUTPUT_DIR, algo)
+    os.makedirs(algo_dir, exist_ok=True)
+    enc_path = os.path.join(algo_dir, "dec_" + enc_file.filename)
+    meta_path = os.path.join(algo_dir, "dec_" + meta_file.filename)
     enc_file.save(enc_path)
     meta_file.save(meta_path)
 
@@ -91,12 +93,12 @@ def api_decrypt():
         else:
             if not key_file:
                 return jsonify({"error": "Key file is required for symmetric decryption"}), 400
-            k_path = os.path.join(OUTPUT_DIR, "dec_" + key_file.filename)
+            k_path = os.path.join(algo_dir, "dec_" + key_file.filename)
             key_file.save(k_path)
             with open(k_path, "rb") as f:
                 key = f.read()
 
-        result = crypto_utils.decrypt_file(enc_path, meta_path, OUTPUT_DIR,
+        result = crypto_utils.decrypt_file(enc_path, meta_path, algo_dir,
                                            key=key, private_key_pem=private_key_pem)
 
         preview = ""
@@ -130,8 +132,9 @@ def api_compare():
     if file.filename == "":
         return jsonify({"error": "No file selected"}), 400
 
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    input_path = os.path.join(OUTPUT_DIR, "cmp_" + file.filename)
+    algo_dir = os.path.join(OUTPUT_DIR, "Compare")
+    os.makedirs(algo_dir, exist_ok=True)
+    input_path = os.path.join(algo_dir, "cmp_" + file.filename)
     file.save(input_path)
 
     try:
