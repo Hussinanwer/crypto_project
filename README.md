@@ -171,69 +171,7 @@ For **Hybrid** mode, an extra file is created:
 
 ---
 
-## Video Demo Guide (2–5 Minutes)
 
-> The project requires a short screen-recorded video. Here is the recommended structure.
-
----
-
-### Section 1 — Introduction (0:00 – 0:30)
-
-Say out loud:
-- "This is the Cryptography Lib Lab project for the Information Security course."
-- "I implemented AES-256, DES, RSA-2048, and Hybrid encryption using Python and PyCryptodome."
-- "The application encrypts real student record data, saves the ciphertext, then decrypts and verifies it."
-- "It also includes a web UI, algorithm comparison, and SHA-256 hash verification."
-
----
-
-### Section 2 — Code Walkthrough (0:30 – 2:00)
-
-Open `crypto_utils.py` and briefly explain:
-
-- `generate_aes_key()` — generates a random 256-bit key
-- `encrypt_aes(data, key)` — AES-CBC encryption with random IV and PKCS7 padding
-- `decrypt_aes(ciphertext, key, iv)` — decrypts and removes padding
-- `encrypt_rsa / decrypt_rsa` — RSA with OAEP padding
-- `hybrid_encrypt / hybrid_decrypt` — AES encrypts data, RSA encrypts the AES key
-- `compute_sha256 / verify_files` — SHA-256 hash comparison for verification
-- `compare_algorithms` — runs both AES and DES and benchmarks them
-
----
-
-### Section 3 — Live Demo (2:00 – 4:00)
-
-Run `python main.py` to open the web UI, then demo in this order:
-
-**1. Encrypt tab**
-- Select AES-256
-- Upload `data/students.csv`
-- Click Encrypt — show the Base64 ciphertext and SHA-256 hash
-
-**2. Decrypt tab**
-- Upload the 3 output files
-- Click Decrypt & Verify — show the **SUCCESS** badge and decrypted content preview
-
-**3. AES vs DES tab**
-- Upload `data/students.csv`
-- Click Run Comparison — show the table (key sizes, timings, security notes)
-
-**4. Hybrid tab**
-- Click Generate RSA Keys
-- Upload `students.csv` and click Hybrid Encrypt
-- Upload the encrypted files and click Hybrid Decrypt & Verify
-
----
-
-### Section 4 — Conclusion (4:00 – 4:30)
-
-Say out loud:
-- "The SHA-256 hashes of the original and decrypted files match exactly, which proves the decryption was successful."
-- "AES-256 is far more secure than DES — DES uses only a 56-bit key and is vulnerable to brute-force attacks."
-- "The hybrid approach mirrors real-world systems like TLS, where a symmetric key is exchanged using asymmetric encryption."
-- "One security limitation is that the symmetric key is stored as a plain file — in a real system it would be password-protected."
-
----
 
 ## Libraries Used
 
